@@ -63,7 +63,7 @@ namespace WordFrequencyTest
         {
             WordFrequencyGame game = new WordFrequencyGame();
             //When
-            string actualResult = game.GetResult(inputStr);
+            string actualResult = game.GetWordFrequency(inputStr);
             //Then
             Assert.Equal(expectResult, actualResult);
         }
