@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace WordFrequency
@@ -16,58 +17,39 @@ namespace WordFrequency
             }
             else
             {
-                //split the input string with 1 to n pieces of spaces
+                //split the word string with 1 to n pieces of spaces
                 string[] words = Regex.Split(inputStr, Space);
+                List<WordCount> inputWordList = words.Select(word => new WordCount(word, 1)).ToList();
 
-                List<WordCount> inputList = new List<WordCount>();
-                foreach (var s in words)
-                {
-                    WordCount input = new WordCount(s, 1);
-                    inputList.Add(input);
-                }
+                //get the mapWords for the next step of sizing the same word
+                Dictionary<string, List<WordCount>> mapWords = GetListMap(inputWordList);
 
-                //get the map for the next step of sizing the same word
-                Dictionary<string, List<WordCount>> map = GetListMap(inputList);
+                List<WordCount> list = mapWords.Select(mapWord => new WordCount(mapWord.Key, mapWord.Value.Count)).ToList();
+                inputWordList = list;
 
-                List<WordCount> list = new List<WordCount>();
-                foreach (var entry in map)
-                {
-                    WordCount input = new WordCount(entry.Key, entry.Value.Count);
-                    list.Add(input);
-                }
+                inputWordList.Sort((word1, word2) => word2.Count - word1.Count);
 
-                inputList = list;
-
-                inputList.Sort((w1, w2) => w2.Count - w1.Count);
-
-                List<string> strList = new List<string>();
-
-                //stringJoiner joiner = new stringJoiner("\n");
-                foreach (WordCount w in inputList)
-                {
-                    string s = w.Value + " " + w.Count;
-                    strList.Add(s);
-                }
-
-                return string.Join("\n", strList.ToArray());
+                List<string> finalWordList = (from WordCount word in inputWordList
+                                        let s = word.Value + " " + word.Count
+                                        select s).ToList();
+                return string.Join("\n", finalWordList.ToArray());
             }
         }
 
         private Dictionary<string, List<WordCount>> GetListMap(List<WordCount> inputList)
         {
             Dictionary<string, List<WordCount>> map = new Dictionary<string, List<WordCount>>();
-            foreach (var input in inputList)
+            foreach (var word in inputList)
             {
-                //       map.computeIfAbsent(input.getValue(), k -> new ArrayList<>()).add(input);
-                if (!map.ContainsKey(input.Value))
+                if (!map.ContainsKey(word.Value))
                 {
-                    List<WordCount> arr = new List<WordCount>();
-                    arr.Add(input);
-                    map.Add(input.Value, arr);
+                    List<WordCount> wordList = new List<WordCount>();
+                    wordList.Add(word);
+                    map.Add(word.Value, wordList);
                 }
                 else
                 {
-                    map[input.Value].Add(input);
+                    map[word.Value].Add(word);
                 }
             }
 
