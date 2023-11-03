@@ -24,7 +24,9 @@ namespace WordFrequency
                 //get the mapWords for the next step of sizing the same word
                 Dictionary<string, List<WordCount>> mapWords = GetListMap(inputWordList);
 
-                List<WordCount> list = mapWords.Select(mapWord => new WordCount(mapWord.Key, mapWord.Value.Count)).ToList();
+                List<WordCount> list = mapWords
+                    .Select(mapWord => new WordCount(mapWord.Key, mapWord.Value.Count))
+                    .ToList();
                 inputWordList = list;
 
                 inputWordList.Sort((word1, word2) => word2.Count - word1.Count);
